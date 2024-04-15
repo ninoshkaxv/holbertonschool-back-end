@@ -6,9 +6,9 @@ Script that gathers data from API
 
 if __name__ == "__main__":
 
-    import csv
     import requests
     from sys import argv
+    import json
 
     if len(argv) < 2:
         exit()
@@ -20,8 +20,11 @@ if __name__ == "__main__":
     name = name.json()
     name = name[0]["username"]
     todos = todos.json()
-    file_name = "{}.csv".format(argv[1])
-    with open(file_name, 'w') as csv_file:
-        writer = csv.writer(csv_file, delimiter=',', quoting=csv.QUOTE_ALL)
-        for todo in todos:
-            writer.writerow([argv[1], name, todo['completed'], todo['title']])
+    result = {}
+    result[argv[1]] = []
+    for todo in todos:
+        result[argv[1]].append(
+            {"task": todo["title"], "completed": todo["completed"],
+             "username": name})
+    with open("{}.json".format(argv[1]), 'w') as result_file:
+        json.dump(result, result_file)
